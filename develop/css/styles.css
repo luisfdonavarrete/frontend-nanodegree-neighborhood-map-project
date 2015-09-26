@@ -15,15 +15,6 @@ html, body {
 	left: 0px;
 }
 
-#locations-list-view{
-	position: absolute;
-	right: 0;
-	top: 0;
-	height: 100%;
-	width: 25%;
-	overflow-y: scroll;
-}
-
 .list-group-item:first-child {
 	border-top-left-radius: 0px;
 	border-top-right-radius: 0px;
@@ -62,10 +53,10 @@ html, body {
 #sidebar-wrapper {
 	z-index: 1000;
 	position: fixed;
-	left: 250px;
+	top: 0;
+	right: 0;
 	width: 0;
 	height: 100%;
-	margin-left: -250px;
 	overflow-y: auto;
 	-webkit-transition: all 0.5s ease;
 	-moz-transition: all 0.5s ease;
@@ -91,7 +82,7 @@ html, body {
 
 @media(min-width:768px) {
 	#wrapper {
-		padding-left: 250px;
+		padding-right: 250px;
 	}
 
 	#wrapper.toggled {
