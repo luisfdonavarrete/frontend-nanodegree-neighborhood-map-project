@@ -14,15 +14,14 @@ module.exports = function(grunt) {
 		},
 		concat: {
 			options: {
-				separator: '/**/'
+				separator: ';'
 			},
 			script: {
 				src: [
-					// ...more  bootstrap JS you might want to add
+					'bower_components/jquery/dist/jquery.js',
 					'bower_components/bootstrap/js/collapse.js',
 					'bower_components/bootstrap/js/scrollspy.js',
 					'bower_components/knockout/dist/knockout.js',
-					'bower_components/jquery/dist/jquery.js',
 					'develop/js/app.js'
 				],
 				dest: 'assets/js/app.js'
