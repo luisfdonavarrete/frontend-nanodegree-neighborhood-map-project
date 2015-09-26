@@ -9729,7 +9729,7 @@ return jQuery;
 				position: new google.maps.LatLng(data.location.lat, data.location.lng),
 				title: data.name,
 				map: map,
-				animation: google.maps.Animation.DROP 
+				animation: google.maps.Animation.DROP
 			}));
 		bounds.extend(this.marker().position);
 
