@@ -1,0 +1,16 @@
+{
+  "name": "Neighborhood Map Project",
+  "version": "0.0.0",
+  "authors": [
+    "Luis Navarrete <luis.na06@gmail.com>"
+  ],
+  "description": "Fourth project for Udacity Front-end Nanodegree",
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
