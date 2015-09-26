@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+		<title>Neighboorhood Map Project</title>
+
+		<!-- Bootstrap -->
+		<link href="assets/css/styles.min.css" rel="stylesheet">
+		<!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+		<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+		<!--[if lt IE 9]>
+<script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+<script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+<![endif]-->
+
+	</head>
+	<body>
+		<div id="map-section" class="container-fluid">
+
+		</div>
+		<div id="locations-list-view">						
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<form class="form-inline">
+						<div class="input-group">
+							<input type="text" class="form-control" placeholder="Search for..." data-bind="value: query, valueUpdate: 'keyup'" autocomplete="off">
+							<span class="input-group-btn">
+								<button class="btn btn-default" type="button">Go!</button>
+							</span>
+						</div>
+					</form>
+				</div>
+				<div class="list-group" data-bind="foreach: filterLocations">
+					<a href="#" class="list-group-item">
+						<h4 class="list-group-item-heading" data-bind="text: name"></h4>
+						<p class="list-group-item-text" data-bind="text: location().formattedAddress"></p>
+					</a>
+				</div>
+			</div>
+		</div>
+		<script src="assets/js/app.min.js"></script>
+		<script async defer
+			  src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBo8PcYtZ6yTKECVtm_PmBuLm9afDuOmqg&callback=initMap">
+		</script>
+	</body>
+</html>

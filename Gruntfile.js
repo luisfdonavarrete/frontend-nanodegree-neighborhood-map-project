@@ -48,6 +48,20 @@ module.exports = function(grunt) {
 				}
 			}			
 		},
+		critical: {
+			test: {
+				options: {
+					base: './',
+					css: [
+						'assets/css/styles.min.css'
+					],
+					width: 320,
+					height: 70
+				},
+				src: 'develop/index.html',
+				dest: 'index.html'
+			}
+		},
 		watch: {
 			grunt: { 
 				files: ['Gruntfile.js'], 
@@ -75,10 +89,11 @@ module.exports = function(grunt) {
 	grunt.loadNpmTasks('grunt-contrib-concat');
 	grunt.loadNpmTasks('grunt-contrib-cssmin');
 	grunt.loadNpmTasks('grunt-contrib-watch');
+	grunt.loadNpmTasks('grunt-critical');
 	// Default task(s).
 
-	grunt.registerTask('cssTask', ['clean:css', 'cssmin']);
+	grunt.registerTask('cssTask', ['clean:css', 'cssmin', 'critical']);
 	grunt.registerTask('jsTask',  ['clean:js', 'concat', 'uglify']);
-	grunt.registerTask('default',  ['clean', 'cssTask', 'jsTask', 'watch']);
+	grunt.registerTask('default',  ['clean', 'cssTask', 'jsTask','watch']);
 
 };

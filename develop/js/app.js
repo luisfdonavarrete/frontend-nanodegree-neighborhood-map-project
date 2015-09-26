@@ -7,15 +7,14 @@ window.initMap = (function () {
 	    FOURSQUARE_CLIENT_ID = "JBECVIB3NHKFR3G1INT4BMJZFO2FZVHZNQNSOCDYRXDOZCEA",
 	    FOURSQUARE_CLIENT_SECRET = "ADKJBKRSFS3PTFRIPSDZMIJZ0QF0B4YJJXUQCPDOIT5YOAU5",
 	    map,
-	    infowindow;
-	var bounds;
+	    infowindow,
+	    bounds;
 
 	function Location(data) {
 		this.name = ko.observable(data.name);
 		this.latitude = ko.observable(data.location.lat);
 		this.longitude = ko.observable(data.location.lng);
 		this.location = ko.observable(data.location);
-
 		this.marker = ko.observable(
 			new google.maps.Marker({			
 				position: new google.maps.LatLng(data.location.lat, data.location.lng),
@@ -26,22 +25,22 @@ window.initMap = (function () {
 		bounds.extend(this.marker().position);
 
 		/*var infowindow = new google.maps.InfoWindow({
-		content: data.name
-	});
+			content: data.name
+		});
 
-	function toggleBounce() {
-		if (marker.getAnimation() !== null) {
-			marker.setAnimation(null);
-		} else {
-			marker.setAnimation(google.maps.Animation.BOUNCE);
+		function toggleBounce() {
+			if (marker.getAnimation() !== null) {
+				marker.setAnimation(null);
+			} else {
+				marker.setAnimation(google.maps.Animation.BOUNCE);
+			}
 		}
-	}
 
-	marker.addListener('click', function(){
-		console.log("sfs");
-		toggleBounce();
-		infowindow.open(map, marker);
-	});*/
+		marker.addListener('click', function(){
+			console.log("sfs");
+			toggleBounce();
+			infowindow.open(map, marker);
+		});*/
 	}
 
 	function LocationViewModel() {
