@@ -19,41 +19,40 @@
 	</head>
 	<body>
 		<div  id="wrapper">
-			<div id="page-content-wrapper">	
-				<a href="#menu-toggle" class="btn btn-default" id="menu-toggle">Toggle Menu</a>			
-				<div id="map-section">
-
-				</div>									
+			<div id="page-content-wrapper">
+				<div id="map-section"></div>									
 			</div>
-			<div id="sidebar-wrapper">
+			<div id="list-view-wrapper">
 				<div class="panel panel-default">
 					<div class="panel-heading">
 						<form class="form-inline">
-							<div class="input-group">
-								<input type="text" class="form-control" placeholder="Search for..." data-bind="value: query, valueUpdate: 'keyup'" autocomplete="off">
-								<span class="input-group-btn">
-									<button class="btn btn-default" type="button">Go!</button>
-								</span>
+							<!--<div class="form-group">
+								<button class="c-hamburger c-hamburger--rot">
+									<span>toggle menu</span>
+								</button>
+							</div>-->
+							<div class="form-group">
+								<div class="input-group">
+									<input type="text" class="form-control" placeholder="Search for..." data-bind="value: query, valueUpdate: 'keyup'" autocomplete="off">
+									<span class="input-group-btn">
+										<button class="btn btn-default" type="button">Go!</button>
+									</span>
+								</div>
 							</div>
 						</form>
 					</div>
-					<div class="list-group" data-bind="foreach: filterLocations">
-						<a href="#" class="list-group-item">
-							<h4 class="list-group-item-heading" data-bind="text: name"></h4>
-							<p class="list-group-item-text" data-bind="text: location().formattedAddress"></p>
-						</a>
+					<div class="panel-body fixed-size-scroll">
+						<div class="list-group location-list-view" data-bind="foreach: filterLocations">
+							<a href="#" class="list-group-item">
+								<h4 class="list-group-item-heading" data-bind="text: name"></h4>
+								<p class="list-group-item-text" data-bind="text: location().formattedAddress"></p>
+							</a>
+						</div>
 					</div>
 				</div>
 			</div>			
 		</div>		
 		<script src="assets/js/app.min.js"></script>
-		<script>
-			$("#menu-toggle").click(function(e) {
-				e.preventDefault();
-				$("#wrapper").toggleClass("toggled");
-			});
-		</script>	
-
 		<script async defer
 			  src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBo8PcYtZ6yTKECVtm_PmBuLm9afDuOmqg&callback=initMap">
 		</script>

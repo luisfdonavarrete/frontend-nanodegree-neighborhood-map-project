@@ -50,18 +50,16 @@ html, body {
 	padding-right: 350px;
 }
 
-#sidebar-wrapper {
+#list-view-wrapper {
 	z-index: 1000;
 	position: fixed;
-	top: 0;
-	right: 0;
-	width: 0;
-	height: 100%;
-	overflow-y: auto;
-	-webkit-transition: all 0.5s ease;
-	-moz-transition: all 0.5s ease;
-	-o-transition: all 0.5s ease;
-	transition: all 0.5s ease;
+	top: 50px;
+	left: 20px;
+	width: 400px;
+}
+.fixed-size-scroll {
+	max-height: 500px;
+	overflow-y: scroll;
 }
 
 #wrapper.toggled #sidebar-wrapper {
@@ -81,17 +79,6 @@ html, body {
 }
 
 @media(min-width:768px) {
-	#wrapper {
-		padding-right: 350px;
-	}
-
-	#wrapper.toggled {
-		padding-right: 0;
-	}
-
-	#sidebar-wrapper {
-		width: 350px;
-	}
 
 	#wrapper.toggled #sidebar-wrapper {
 		width: 0;
@@ -108,9 +95,111 @@ html, body {
 	}
 }
 
-#menu-toggle{
-	position: fixed;
-	z-index: 10000;
-	top: 0;
+@media(max-width: 800px){
+	#list-view-wrapper {
+		width: 90%;
+		position: absolute;
+		left: 0;
+		right: 0;
+		margin: 0 auto;
+	}
+	.location-list-view{
+		display: none;
+	}
+}
+
+.c-hamburger {
+	display: block;
+	position: relative;
+	overflow: hidden;
+	margin: 0;
+	padding: 0;
+	width: 45px;
+	height: 35px;
+	font-size: 0;
+	text-indent: -9999px;
+	appearance: none;
+	box-shadow: none;
+	border-radius: none;
+	border: none;
+	cursor: pointer;
+	transition: background 0.3s;
+}
+
+.c-hamburger:focus {
+	outline: none;
+}
+
+.c-hamburger span {
+	display: block;
+	position: absolute;
+	top: 15px;
+	left: 10px;
+	right: 10px;
+	height: 2px;
+	background: #000;
+}
+
+.c-hamburger span::before,
+.c-hamburger span::after {
+	position: absolute;
+	display: block;
 	left: 0;
+	width: 100%;
+	height: 2px;
+	background-color: #000;
+	content: "";
+}
+
+.c-hamburger span::before {
+	top: -8px;
+}
+
+.c-hamburger span::after {
+	bottom: -8px;
+}	
+
+.c-hamburger--rot {
+	background-color: #f5f5f5;
+	border: 1px solid #ccc;
+}
+
+.c-hamburger--rot span {
+	transition: transform 0.3s;
+}
+
+/* active state, i.e. menu open */
+.c-hamburger--rot.is-active {
+	background-color: #333;
+}
+
+.c-hamburger--rot.is-active span {
+	transform: rotate(90deg);
+}
+
+.mobile-nav{
+	position: absolute;
+	top: 10px;
+	right: 10px;
+	z-index: 99999;
+}
+
+@media(min-width:768px) {
+	.mobile-nav{
+		display: none;
+	}
+}
+
+::-webkit-scrollbar {
+	width: 5px;
+}
+
+::-webkit-scrollbar-track {
+	-webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3); 
+	border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+	border-radius: 10px;
+	-webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.5); 
 }

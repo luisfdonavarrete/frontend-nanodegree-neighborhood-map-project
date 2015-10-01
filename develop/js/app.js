@@ -103,6 +103,23 @@ window.initMap = (function () {
 	}
 	ko.applyBindings(new LocationViewModel());
 
+	$(".c-hamburger").click(function(event){
+		$(this).toggleClass("is-active");
+		$("#wrapper").toggleClass("toggled");
+	});
+	var toggles = document.querySelectorAll(".c-hamburger");
+
+	for (var i = toggles.length - 1; i >= 0; i--) {
+		var toggle = toggles[i];
+		toggleHandler(toggle);
+	};
+
+	function toggleHandler(toggle) {
+		toggle.addEventListener( "click", function(e) {
+			e.preventDefault();
+			
+		});
+	}
 
 
 	return function (){
@@ -110,6 +127,17 @@ window.initMap = (function () {
 		map = new google.maps.Map(document.getElementById('map-section'), {
 			center: {lat: 43.472975, lng: -79.687325},
 			zoom: 12
+		});
+		google.maps.event.addDomListener(window, "resize", function() { 
+			console.log("simon si vale!!");
+			var center = map.getCenter();
+			google.maps.event.trigger(map, "resize"); 
+			map.setCenter(center); 
+		});
+		
+		$(".box-shadow-menu").click(function(e) {
+			e.preventDefault(); 
+			$("#wrapper").toggleClass("toggled");
 		});
 	};
 })(); 
