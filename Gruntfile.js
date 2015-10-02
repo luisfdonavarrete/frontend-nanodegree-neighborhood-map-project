@@ -18,7 +18,6 @@ module.exports = function(grunt) {
 			},
 			script: {
 				src: [
-					'bower_components/jquery/dist/jquery.js',
 					'bower_components/bootstrap/js/collapse.js',
 					'bower_components/bootstrap/js/scrollspy.js',
 					'bower_components/knockout/dist/knockout.js',
@@ -30,7 +29,10 @@ module.exports = function(grunt) {
 		uglify: {
 			dist: {
 				files: {
-					'assets/js/app.min.js': ['assets/js/app.js']
+					'assets/js/app.min.js': [
+						'bower_components/jquery/dist/jquery.min.js',
+						'bower_components/underscore/underscore-min.js',
+						'assets/js/app.js']
 				}
 			}
 		},

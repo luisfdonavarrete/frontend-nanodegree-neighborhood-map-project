@@ -51,7 +51,7 @@
 					</div>
 					<div class="panel-body fixed-size-scroll">
 						<div class="list-group location-list-view" data-bind="foreach: filterLocations">
-							<a href="#" class="list-group-item">
+							<a href="#" class="list-group-item" data-bind="click: $parent.selectLocation">
 								<h4 class="list-group-item-heading" data-bind="text: name"></h4>
 								<p class="list-group-item-text" data-bind="text: location().formattedAddress"></p>
 							</a>

@@ -8,9 +8,11 @@ window.initMap = (function () {
 	    FOURSQUARE_CLIENT_SECRET = "ADKJBKRSFS3PTFRIPSDZMIJZ0QF0B4YJJXUQCPDOIT5YOAU5",
 	    map,
 	    infowindow,
-	    bounds;
+	    bounds,
+	    previousMarker;
 
 	function Location(data) {
+		var self = this;
 		this.name = ko.observable(data.name);
 		this.latitude = ko.observable(data.location.lat);
 		this.longitude = ko.observable(data.location.lng);
@@ -22,32 +24,36 @@ window.initMap = (function () {
 				map: map,
 				animation: google.maps.Animation.DROP
 			}));
+		
 		bounds.extend(this.marker().position);
-
-		/*var infowindow = new google.maps.InfoWindow({
-			content: data.name
-		});
-
-		function toggleBounce() {
-			if (marker.getAnimation() !== null) {
-				marker.setAnimation(null);
-			} else {
-				marker.setAnimation(google.maps.Animation.BOUNCE);
+		
+		this.selectHandler = function(){
+			if(_.isEqual(self.marker(), previousMarker)){ 
+				self.marker().setAnimation(null);
+				infowindow.close();
+				previousMarker = undefined;
 			}
-		}
-
-		marker.addListener('click', function(){
-			console.log("sfs");
-			toggleBounce();
-			infowindow.open(map, marker);
-		});*/
+			else{
+				infowindow.setContent(data.name);
+				self.marker().setAnimation(google.maps.Animation.BOUNCE);
+				previousMarker && previousMarker.setAnimation(null);
+				infowindow.open(map, self.marker());
+				previousMarker = self.marker();
+			}
+			google.maps.event.addListener(infowindow,'closeclick',function(){
+				previousMarker = undefined;	
+				self.marker().setAnimation(null);
+			});
+		};		
+		google.maps.event.addListener(this.marker(), 'click', this.selectHandler);
+		
 	}
 
 	function LocationViewModel() {
-		var self = this;
+		var self = this; 
 		this.locations = ko.observableArray([]);
 		this.query = ko.observable('');
-
+		this.activeLocation = ko.observable();
 		this.filterLocations = ko.computed(function() {
 			self.locations().forEach(function(location){
 				if(location.name().toLowerCase().indexOf(self.query().toLowerCase()) >= 0){
@@ -63,6 +69,9 @@ window.initMap = (function () {
 				}
 			});
 		});
+		this.selectLocation = function(locationItem){
+			locationItem.selectHandler();
+		};
 
 		function getLocationsData(url) {
 			$.getJSON(url, function (data) {
@@ -101,6 +110,7 @@ window.initMap = (function () {
 			locationErrorCallback();
 		}
 	}
+	
 	ko.applyBindings(new LocationViewModel());
 
 	$(".c-hamburger").click(function(event){
@@ -128,8 +138,8 @@ window.initMap = (function () {
 			center: {lat: 43.472975, lng: -79.687325},
 			zoom: 12
 		});
-		google.maps.event.addDomListener(window, "resize", function() { 
-			console.log("simon si vale!!");
+		infowindow = new google.maps.InfoWindow();
+		google.maps.event.addDomListener(window, "resize", function() {
 			var center = map.getCenter();
 			google.maps.event.trigger(map, "resize"); 
 			map.setCenter(center); 
@@ -140,4 +150,4 @@ window.initMap = (function () {
 			$("#wrapper").toggleClass("toggled");
 		});
 	};
-})(); 
+})();
