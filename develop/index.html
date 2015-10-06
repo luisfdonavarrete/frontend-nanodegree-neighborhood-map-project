@@ -43,18 +43,43 @@
 					</div>
 					<div class="panel-body fixed-size-scroll">
 						<div class="list-group location-list-view" data-bind="foreach: filterLocations">
-							<a href="#" class="list-group-item" data-bind="click: $parent.selectLocation">
+							<a class="list-group-item" data-bind="click: $parent.selectLocation, attr: {href: link, title: name}">
 								<h4 class="list-group-item-heading" data-bind="text: name"></h4>
-								<p class="list-group-item-text" data-bind="text: location().formattedAddress"></p>
+								<p class="list-group-item-text">
+									
+										<span data-bind="text: address"></span><br>
+										San Francisco, CA 94103<br>
+										<abbr title="Phone">P:</abbr><span data-bind="text: phoneNumber"></span>
+									
+								</p>
 							</a>
 						</div>
 					</div>
 				</div>
 			</div>			
-		</div>		
-		<script src="assets/js/app.min.js"></script>
-		<script async defer
-			  src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBo8PcYtZ6yTKECVtm_PmBuLm9afDuOmqg&callback=initMap">
+		</div>	
+		
+		<script type="text/template" id="info-window-template">
+			<div id="iw-container">   
+ 				<div class="iw-title">Porcelain Factory of Vista Alegre</div>   
+ 				<div class="iw-content">   
+					<div class="iw-subTitle">History</div>   
+ 						<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Voluptates rerum dolore.</p>			
+					</div>   
+ 				<div class="iw-bottom-gradient"></div>   
+			</div>
 		</script>
+		<script src="assets/js/app.min.js"></script>
+		<script 
+			  src="https://maps.googleapis.com/maps/api/js?v=3.18&sensor=false&callback=initMap">
+		</script>
+		
 	</body>
 </html>
+
+
+<!--<img src="http://maps.marnoto.com/en/5wayscustomizeinfowindow/images/vistalegre.jpg" alt="Porcelain Factory of Vista Alegre" height="115" width="83">   
+<p></p>   
+<div class="iw-subTitle">Contacts</div>   
+<p>VISTA ALEGRE ATLANTIS, SA<br>3830-292 Ílhavo - Portugal<br>  
+<br>Phone.  351 234 320 600<br>e-mail: geral@vaa.pt<br>www: www.myvistaalegre.com</p>  -->
