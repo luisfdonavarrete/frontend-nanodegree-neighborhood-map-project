@@ -43,14 +43,10 @@
 					</div>
 					<div class="panel-body fixed-size-scroll">
 						<div class="list-group location-list-view" data-bind="foreach: filterLocations">
-							<a class="list-group-item" data-bind="click: $parent.selectLocation, attr: {href: link, title: name}">
+							<a class="list-group-item" data-bind="click: $parent.selectLocation, attr: {href: link, title: name}, css: { 'active' : $parent.isActive($data)}">
 								<h4 class="list-group-item-heading" data-bind="text: name"></h4>
 								<p class="list-group-item-text">
-									
-										<span data-bind="text: address"></span><br>
-										San Francisco, CA 94103<br>
-										<abbr title="Phone">P:</abbr><span data-bind="text: phoneNumber"></span>
-									
+									<span data-bind="text: location().address"></span><br>
 								</p>
 							</a>
 						</div>
@@ -61,25 +57,20 @@
 		
 		<script type="text/template" id="info-window-template">
 			<div id="iw-container">   
- 				<div class="iw-title">Porcelain Factory of Vista Alegre</div>   
- 				<div class="iw-content">   
-					<div class="iw-subTitle">History</div>   
- 						<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Voluptates rerum dolore.</p>			
+ 				<div class="iw-title"><span class="glyphicon glyphicon-map-marker" aria-hidden="true"></span> <%= name %></div>    
+ 				<div class="iw-content">
+ 						<p>
+							<%= address %></span><br>
+							<%= city %>, <%= cc %><br>
+							<span><%= phone %></span>
+						</p>			
 					</div>   
  				<div class="iw-bottom-gradient"></div>   
 			</div>
 		</script>
-		<script src="assets/js/app.min.js"></script>
-		<script 
-			  src="https://maps.googleapis.com/maps/api/js?v=3.18&sensor=false&callback=initMap">
+		<script async defer
+			  src="https://maps.googleapis.com/maps/api/js?v=3.20&sensor=false&callback=initMap">
 		</script>
-		
+		<script src="assets/js/app.min.js"></script>
 	</body>
 </html>
-
-
-<!--<img src="http://maps.marnoto.com/en/5wayscustomizeinfowindow/images/vistalegre.jpg" alt="Porcelain Factory of Vista Alegre" height="115" width="83">   
-<p></p>   
-<div class="iw-subTitle">Contacts</div>   
-<p>VISTA ALEGRE ATLANTIS, SA<br>3830-292 Ílhavo - Portugal<br>  
-<br>Phone.  351 234 320 600<br>e-mail: geral@vaa.pt<br>www: www.myvistaalegre.com</p>  -->
