@@ -65,7 +65,10 @@
 		
 		<script type="text/template" id="info-window-template">
 			<div id="iw-container">   
- 				<div class="iw-title"><span class="glyphicon glyphicon-map-marker" aria-hidden="true"></span> <%= name %></div>    
+ 				<div class="iw-title">
+					<span class="glyphicon glyphicon-map-marker" aria-hidden="true"></span> 
+					<a target="_blank" href="<%= webSite %>"><%= name %></a>
+				</div>    
  				<div class="iw-content">
  						<p>
 							<%= address %></span><br>

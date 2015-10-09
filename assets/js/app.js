@@ -518,7 +518,7 @@ a+" })()) }}"};this.addTemplate=function(a,b){w.write("<script type='text/html' 
 		this.longitude = ko.observable(data.location.lng);
 		this.contact = ko.observable(data.contact);
 		this.webSite = ko.observable(data.url);
-		this.link = ko.observable(encodeURIComponent("http://localhost:8000/" + data.name));
+		this.link = ko.observable(encodeURIComponent(data.name));
 		this.marker = ko.observable(
 			new google.maps.Marker({			
 				position: new google.maps.LatLng(data.location.lat, data.location.lng),
@@ -538,6 +538,7 @@ a+" })()) }}"};this.addTemplate=function(a,b){w.write("<script type='text/html' 
 			else{
 				infowindow.setContent(infoWindowTemplate({
 					name : self.name(),
+					webSite: self.webSite(),
 					address : self.location().address,
 					city : self.location().city,
 					cc : self.location().cc,
@@ -558,9 +559,9 @@ a+" })()) }}"};this.addTemplate=function(a,b){w.write("<script type='text/html' 
 		
 	}
 
-	function LocationViewModel() {
+	function LocationViewModel(locationsData) {
 		var self = this; 
-		this.locations = ko.observableArray([]);
+		this.locations = ko.observableArray(locationsData);
 		this.query = ko.observable('');
 		this.activeLocation = ko.observable();
 		this.filterLocations = ko.computed(function() {
@@ -580,6 +581,7 @@ a+" })()) }}"};this.addTemplate=function(a,b){w.write("<script type='text/html' 
 		});
 		
 		this.selectLocation = function(locationItem){
+			location.hash = locationItem.link();
 			self.activeLocation(locationItem);
 			locationItem.selectHandler();
 		};
@@ -587,64 +589,43 @@ a+" })()) }}"};this.addTemplate=function(a,b){w.write("<script type='text/html' 
 		this.isActive = function(item){
 			return _.isEqual(item, self.activeLocation());
 		};
-
-		function getLocationsData(url) {
-			$.getJSON(url, function (data) {
-				var locations = data.response.groups[0].items;
-				var mappedLocations = $.map(locations, function(item) {
-					return new Location(item.venue);
-				});
-				map.fitBounds(bounds);
-				self.locations(mappedLocations);
-			});
-		}
-
-		function locationSuccessCallback(position) {
-			var latitude = position.coords.latitude,
-			    longitude = position.coords.longitude,
-			    fourSquareQuery = FOURSQUARE_API_URL +
-			    "&client_id=" + FOURSQUARE_CLIENT_ID +
-			    "&client_secret=" + FOURSQUARE_CLIENT_SECRET +
-			    "&v=20130815" +
-			    "&ll=" + latitude + "," + longitude;
-			getLocationsData(fourSquareQuery);
-		}
-
-		function locationErrorCallback(errors) {
-			var fourSquareQuery = FOURSQUARE_API_URL +
-			    "&client_id=" + FOURSQUARE_CLIENT_ID +
-			    "&client_secret=" + FOURSQUARE_CLIENT_SECRET +
-			    "&v=20130815" +
-			    "&near=" + DEFAUTL_CITY_SEARCH;
-			getLocationsData(fourSquareQuery);
-		}
-
-		if ("geolocation" in navigator) {
-			navigator.geolocation.getCurrentPosition(locationSuccessCallback, locationErrorCallback);
-		} else {
-			locationErrorCallback();
-		}
 	}
 	
-	ko.applyBindings(new LocationViewModel());
-
-	$(".c-hamburger").click(function(event){
-		$(this).toggleClass("is-active");
-		$("#wrapper").toggleClass("toggled");
-	});
-	var toggles = document.querySelectorAll(".c-hamburger");
-
-	for (var i = toggles.length - 1; i >= 0; i--) {
-		var toggle = toggles[i];
-		toggleHandler(toggle);
-	};
-
-	function toggleHandler(toggle) {
-		toggle.addEventListener( "click", function(e) {
-			e.preventDefault();
-			
+	function getLocationsData(url) {
+		$.getJSON(url, function (data) {
+			var locations = data.response.groups[0].items;
+			var localStorageAc = [];
+			var mappedLocations = $.map(locations, function(item) {
+				localStorageAc.push(item.venue);
+				return new Location(item.venue);
+			});
+			localStorage.setItem('locations', JSON.stringify(localStorageAc));
+			map.fitBounds(bounds);
+			ko.applyBindings(new LocationViewModel(mappedLocations));
 		});
 	}
+
+	function locationSuccessCallback(position) {
+		var latitude = position.coords.latitude,
+		    longitude = position.coords.longitude,
+		    fourSquareQuery = FOURSQUARE_API_URL +
+		    "&client_id=" + FOURSQUARE_CLIENT_ID +
+		    "&client_secret=" + FOURSQUARE_CLIENT_SECRET +
+		    "&v=20130815" +
+		    "&ll=" + latitude + "," + longitude;
+		getLocationsData(fourSquareQuery);
+	}
+
+	function locationErrorCallback(errors) {
+		var fourSquareQuery = FOURSQUARE_API_URL +
+		    "&client_id=" + FOURSQUARE_CLIENT_ID +
+		    "&client_secret=" + FOURSQUARE_CLIENT_SECRET +
+		    "&v=20130815" +
+		    "&near=" + DEFAUTL_CITY_SEARCH;
+		getLocationsData(fourSquareQuery);
+	}
+	
+	
 	
 	var init = function(){ 
 		bounds = new google.maps.LatLngBounds();
@@ -720,9 +701,46 @@ a+" })()) }}"};this.addTemplate=function(a,b){w.write("<script type='text/html' 
 			e.preventDefault(); 
 			$("#wrapper").toggleClass("toggled");
 		});
+		
+		
+		if(!localStorage.getItem('locations')){
+			if ("geolocation" in navigator) {
+				navigator.geolocation.getCurrentPosition(locationSuccessCallback, locationErrorCallback);
+			}
+			else {
+				locationErrorCallback();
+			}
+		}
+		else{
+			var mappedLocations = $.map(JSON.parse(localStorage.getItem('locations')), function(item) {
+				return new Location(item);
+			});
+			map.fitBounds(bounds);
+			ko.applyBindings(new LocationViewModel(mappedLocations));
+		}
+		
 	};
 
 
 	return init;
+	
+	
+	$(".c-hamburger").click(function(event){
+		$(this).toggleClass("is-active");
+		$("#wrapper").toggleClass("toggled");
+	});
+	var toggles = document.querySelectorAll(".c-hamburger");
+
+	for (var i = toggles.length - 1; i >= 0; i--) {
+		var toggle = toggles[i];
+		toggleHandler(toggle);
+	};
+
+	function toggleHandler(toggle) {
+		toggle.addEventListener( "click", function(e) {
+			e.preventDefault();
+
+		});
+	}
 	
 })();

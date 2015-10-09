@@ -32,6 +32,7 @@ module.exports = function(grunt) {
 					'assets/js/app.min.js': [
 						'bower_components/jquery/dist/jquery.min.js',
 						'bower_components/underscore/underscore-min.js',
+						'bower_components/amplify/lib/amplify.store.min.js',
 						'assets/js/app.js']
 				}
 			}

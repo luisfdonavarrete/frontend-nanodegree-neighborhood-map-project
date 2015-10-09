@@ -228,7 +228,7 @@ a.list-group-item .list-group-item-heading, button.list-group-item .list-group-i
 #iw-container {
 	margin-bottom: 10px;
 }
-#iw-container .iw-title {
+#iw-container .iw-title, .iw-title a {
 	font-family: 'Open Sans Condensed',sans-serif;
 	font-size: 18px;
 	font-weight: 400;
@@ -236,6 +236,7 @@ a.list-group-item .list-group-item-heading, button.list-group-item .list-group-i
 	background-color: #003058;
 	color: #fff;
 	margin: 0;
+	text-decoration: none;
 }
 #iw-container .iw-content {
 	font-size: 14px;
