@@ -504,11 +504,43 @@ a+" })()) }}"};this.addTemplate=function(a,b){w.write("<script type='text/html' 
 	    DEFAUTL_CITY_SEARCH = "Chicago, IL",
 	    FOURSQUARE_CLIENT_ID = "JBECVIB3NHKFR3G1INT4BMJZFO2FZVHZNQNSOCDYRXDOZCEA",
 	    FOURSQUARE_CLIENT_SECRET = "ADKJBKRSFS3PTFRIPSDZMIJZ0QF0B4YJJXUQCPDOIT5YOAU5",
+	    INFOWINDOW_OFFSET = 150,
 	    map,
 	    infowindow,
 	    bounds,
 	    previousMarker,
-	    infoWindowTemplate;
+	    overlay,
+	    infoWindowTemplate;	
+	
+	/** 
+	 * Define a custom knockout binding in order to use the jQuery-UI autocomplete widget
+	 */
+	ko.bindingHandlers.autoComplete = {
+		// Only using init event because the Jquery.UI.AutoComplete widget will take care of the update callbacks
+		init: function (element, valueAccessor, allBindings, viewModel, bindingContext) {
+			// { selected: mySelectedOptionObservable, options: myArrayOfLabelValuePairs }
+			var settings = valueAccessor();
+			var selectedOption = settings.selected;
+			var options = settings.options;
+
+			var updateElementValueWithLabel = function (event, ui) {
+				// Stop the default behavior
+				event.preventDefault();
+				ui.item.object.selectHandler();
+				// Update our SelectedOption observable
+				if(typeof ui.item !== "undefined") {
+					// ui.item - label|value|...
+					selectedOption(ui.item);
+				}
+			};
+			$(element).autocomplete({
+				source: options,
+				select: function (event, ui) {
+					updateElementValueWithLabel(event, ui);
+				}
+			});
+		}
+	};
 
 	function Location(data) {
 		var self = this;
@@ -525,12 +557,11 @@ a+" })()) }}"};this.addTemplate=function(a,b){w.write("<script type='text/html' 
 				title: data.name,
 				map: map,
 				animation: google.maps.Animation.DROP
-			}));
-		
-		bounds.extend(this.marker().position);
+			})
+		);
 		
 		this.selectHandler = function(){
-			if(_.isEqual(self.marker(), previousMarker)){ 
+			if(_.isEqual(self.marker(), previousMarker)){
 				self.marker().setAnimation(null);
 				infowindow.close();
 				previousMarker = undefined;
@@ -554,9 +585,14 @@ a+" })()) }}"};this.addTemplate=function(a,b){w.write("<script type='text/html' 
 				previousMarker = undefined;	
 				self.marker().setAnimation(null);
 			});
-		};		
-		google.maps.event.addListener(this.marker(), 'click', this.selectHandler);
-		
+			var newPosition = new google.maps.Point(window.innerWidth - 300, window.innerHeight - INFOWINDOW_OFFSET);
+			var markerPosition =  overlay.getProjection().fromLatLngToContainerPixel(self.marker().getPosition());
+			var distance = calculateDistance(newPosition, markerPosition);
+			(window.innerWidth <= 768) ? map.panBy(distance.x, distance.y) : map.panTo(self.marker().getPosition()) ;
+			
+		};
+		bounds.extend(this.marker().position);
+		google.maps.event.addListener(this.marker(), 'click', this.selectHandler);		
 	}
 
 	function LocationViewModel(locationsData) {
@@ -580,6 +616,16 @@ a+" })()) }}"};this.addTemplate=function(a,b){w.write("<script type='text/html' 
 			});
 		});
 		
+		this.selectedOption = ko.observable('');
+		this.options = ko.utils.arrayMap(self.locations(), function (element) {
+			return {
+				label: element.name(),
+				value: element.name(),
+				// This way we still have acess to the original object
+				object: element
+			};
+		});
+		
 		this.selectLocation = function(locationItem){
 			location.hash = locationItem.link();
 			self.activeLocation(locationItem);
@@ -588,9 +634,26 @@ a+" })()) }}"};this.addTemplate=function(a,b){w.write("<script type='text/html' 
 		
 		this.isActive = function(item){
 			return _.isEqual(item, self.activeLocation());
-		};
+		};	
 	}
 	
+	/** 
+	 * Calcute the distance between to point int the map
+	 * @params {object} p - an object that represent a point (p.x, p.y) on the div map 
+ 	 * @params {object} q - an object that represent a point (q.x, q.y) on the div map 
+	 * @return {object} return and object of the form {"x": x, "y": y}
+	 */
+	function calculateDistance(p, q){
+		return {
+			x : q.x - p.x,
+			y : q.y - p.y
+		}
+	}
+	
+	/** 
+	 * Makes an Ajax request to the foursquare API and initilize the ko appication
+	 * @param {string} url - url string to query the foursquare api
+	 */
 	function getLocationsData(url) {
 		$.getJSON(url, function (data) {
 			var locations = data.response.groups[0].items;
@@ -604,28 +667,30 @@ a+" })()) }}"};this.addTemplate=function(a,b){w.write("<script type='text/html' 
 			ko.applyBindings(new LocationViewModel(mappedLocations));
 		});
 	}
-
-	function locationSuccessCallback(position) {
-		var latitude = position.coords.latitude,
-		    longitude = position.coords.longitude,
-		    fourSquareQuery = FOURSQUARE_API_URL +
-		    "&client_id=" + FOURSQUARE_CLIENT_ID +
-		    "&client_secret=" + FOURSQUARE_CLIENT_SECRET +
-		    "&v=20130815" +
-		    "&ll=" + latitude + "," + longitude;
-		getLocationsData(fourSquareQuery);
-	}
-
-	function locationErrorCallback(errors) {
+	
+	/** 
+	 * Callback function for navigator.geolocation.getCurrentPosition method. if the user gives permission
+	 * it gets data from foursquare using the current location otherwise gets data from foursquare using the default city
+	 * @param {object} response - navigator.geolocation.getCurrentPosition
+	 */	
+	function locationCallback(response){
 		var fourSquareQuery = FOURSQUARE_API_URL +
 		    "&client_id=" + FOURSQUARE_CLIENT_ID +
 		    "&client_secret=" + FOURSQUARE_CLIENT_SECRET +
-		    "&v=20130815" +
-		    "&near=" + DEFAUTL_CITY_SEARCH;
+		    "&v=20130815";
+		if(!(response.constructor.name.toString() === 'Geoposition')){
+			fourSquareQuery += "&near=" + DEFAUTL_CITY_SEARCH;
+		}
+		else{
+			var latitude = response.coords.latitude,
+			    longitude = response.coords.longitude;
+			fourSquareQuery += "&ll=" + latitude + "," + longitude;
+		}
 		getLocationsData(fourSquareQuery);
-	}
-	
-	
+	}	
+	/** 
+	 * Initialize all the google maps object needed by the app to work properly 
+	 */
 	
 	var init = function(){ 
 		bounds = new google.maps.LatLngBounds();
@@ -633,79 +698,45 @@ a+" })()) }}"};this.addTemplate=function(a,b){w.write("<script type='text/html' 
 			zoom: 12
 		});
 		infowindow = new google.maps.InfoWindow();
-		infoWindowTemplate = _.template($("#info-window-template").html());
-		
-		
-		
+		infoWindowTemplate = _.template($("#info-window-template").html());		
+		overlay = new google.maps.OverlayView();
+		overlay.draw = function() {};
+		overlay.setMap(map);		
+		google.maps.event.addDomListener(window, "resize", function() {
+			var center =  map.getCenter();
+			google.maps.event.trigger(map, "resize");
+			map.panTo(center); 
+		});		
+		// Subcribe event to change the visial look of the infoWindow
 		google.maps.event.addListener(infowindow, 'domready', function() {
-
 			// Reference to the DIV that wraps the bottom of infowindow
-			var iwOuter = $('.gm-style-iw');
-			
+			var iwOuter = $('.gm-style-iw');			
 			iwOuter.children(':nth-child(1)').attr('style', function(i, s){
 				return s + "display: block !important;";	 			
 			});
-
 			/* Since this div is in a position prior to .gm-div style-iw.
-     * We use jQuery and create a iwBackground variable,
-     * and took advantage of the existing reference .gm-style-iw for the previous div with .prev().
-    */
+			* We use jQuery and create a iwBackground variable,
+			* and took advantage of the existing reference .gm-style-iw for the previous div with .prev().
+			*/
 			var iwBackground = iwOuter.prev();
-
 			// Removes background shadow DIV
 			iwBackground.children(':nth-child(2)').css({'display' : 'none'});
-
 			// Removes white background DIV
 			iwBackground.children(':nth-child(4)').css({'display' : 'none'});
-
-			// Moves the infowindow 115px to the right.
-			iwOuter.parent().parent().css({left: '115px'});
-
-			
-
-			// Changes the desired tail shadow color.
-			iwBackground.children(':nth-child(3)').find('div').children().css({'box-shadow': 'rgba(72, 181, 233, 0.6) 0px 1px 6px', 'z-index' : '1'});
-
 			// Reference to the div that groups the close button elements.
 			var iwCloseBtn = iwOuter.next();
-
-			// Apply the desired effect to the close button
-			iwCloseBtn.css({right: '53px', top: '16px', opacity: '1'});
-			iwCloseBtn.html('<img src="./assets/images/cross8.png" alt="">');
-			
-			var moveArrow = function(){
-				// Moves the arrow 76px to the left margin.
-				iwBackground.children(':nth-child(3)').attr('style', function(i, s){
-					return s + 'left: 41px !important;'
-				});
-				// Moves the shadow of the arrow 76px to the left margin.
-				iwBackground.children(':nth-child(1)').attr('style', function(i, s){ 
-					return s + 'left: 41px !important;'
-				});
-			};
-
-			window.requestAnimationFrame(moveArrow);
+			// Change the image in the close button
+			iwCloseBtn.css({right: '32px', top: '16px', opacity: '1'});
+			iwCloseBtn.html('<img src="./assets/images/cross8.png" alt="">');			
 		});
 		
-		google.maps.event.addDomListener(map, "zoom_changed", function(){
-			
-			
-		});
-		google.maps.event.addDomListener(window, "resize", function() {
-			var center = map.getCenter();
-			google.maps.event.trigger(map, "resize"); 
-			map.setCenter(center); 
-		});
-
-		$(".box-shadow-menu").click(function(e) {
-			e.preventDefault(); 
-			$("#wrapper").toggleClass("toggled");
-		});
-		
+		/** 
+		 * Ask for the current location adn run the app with data from FOURSQUARE or data from the localStorage
+		 */
 		
 		if(!localStorage.getItem('locations')){
 			if ("geolocation" in navigator) {
-				navigator.geolocation.getCurrentPosition(locationSuccessCallback, locationErrorCallback);
+				navigator.geolocation.getCurrentPosition(locationCallback, locationCallback);
 			}
 			else {
 				locationErrorCallback();
@@ -718,29 +749,11 @@ a+" })()) }}"};this.addTemplate=function(a,b){w.write("<script type='text/html' 
 			map.fitBounds(bounds);
 			ko.applyBindings(new LocationViewModel(mappedLocations));
 		}
-		
 	};
-
-
-	return init;
 	
-	
-	$(".c-hamburger").click(function(event){
-		$(this).toggleClass("is-active");
-		$("#wrapper").toggleClass("toggled");
-	});
-	var toggles = document.querySelectorAll(".c-hamburger");
-
-	for (var i = toggles.length - 1; i >= 0; i--) {
-		var toggle = toggles[i];
-		toggleHandler(toggle);
-	};
-
-	function toggleHandler(toggle) {
-		toggle.addEventListener( "click", function(e) {
-			e.preventDefault();
-
-		});
-	}
+	/*
+	**the init function is returned and added the the window object then it gets called when the google map's API is loaded
+	*/
+	return init;	
 	
 })();

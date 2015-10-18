@@ -15,6 +15,17 @@ html, body {
 	left: 0px;
 }
 
+.form-group {
+	margin-bottom: 0;
+}
+
+.list-group-item {
+	padding: 5px 10px;
+	margin-bottom: -1px;
+	border: 1px solid #ddd;
+	color: #000;
+}
+
 .list-group-item:first-child {
 	border-top-left-radius: 0px;
 	border-top-right-radius: 0px;
@@ -29,80 +40,53 @@ html, body {
 	padding: 0;
 }
 
-.list-group-item {
-	padding: 5px 10px;
-	margin-bottom: -1px;
-	border: 1px solid #ddd;
-	color: #000;
-}
-
 a.list-group-item .list-group-item-heading, button.list-group-item .list-group-item-heading {
 	color: #000;
 }
-
-/* Toggle Styles */
 
 #wrapper {
 	padding-left: 0;
 	position: absolute;
 	width: 100%;
 	height: 100%;
-	-webkit-transition: all 0.5s ease;
-	-moz-transition: all 0.5s ease;
-	-o-transition: all 0.5s ease;
-	transition: all 0.5s ease;
-}
-
-#wrapper.toggled {
-	padding-right: 350px;
 }
 
 #list-view-wrapper {
-	z-index: 1000;
+	z-index: 99999;
 	position: fixed;
 	top: 50px;
 	left: 20px;
 	width: 300px;
 }
+
 .fixed-size-scroll {
 	max-height: 500px;
 	overflow-y: scroll;
-}
-
-#wrapper.toggled #sidebar-wrapper {
-	width: 350px;
 }
 
 #page-content-wrapper {
 	width: 100%;
 	height: 100%;
 	position: absolute;
-	padding: 15px;
 }
 
-#wrapper.toggled #page-content-wrapper {
-	position: absolute;
-	margin-right: -350px;
+/* Jquery autocomplet styles */
+
+.ui-autocomplete{
+	border: none;
+	z-index: 999999;
 }
 
-@media(min-width:768px) {
-
-	#wrapper.toggled #sidebar-wrapper {
-		width: 0;
-	}
-
-	#page-content-wrapper {
-		padding: 20px;
-		position: relative;
-	}
-
-	#wrapper.toggled #page-content-wrapper {
-		position: relative;
-		margin-right: 0;
-	}
+.ui-menu .ui-menu-item {
+	position: relative;
+	display: block;
+	padding: 10px 15px;
+	margin-bottom: -1px;
+	background-color: #fff;
+	border: 1px solid #ddd;
 }
 
-@media(max-width: 800px){
+@media(max-width: 768px){
 	#list-view-wrapper {
 		width: 90%;
 		position: absolute;
@@ -115,87 +99,13 @@ a.list-group-item .list-group-item-heading, button.list-group-item .list-group-i
 	}
 }
 
-.c-hamburger {
-	display: block;
-	position: relative;
-	overflow: hidden;
-	margin: 0;
-	padding: 0;
-	width: 45px;
-	height: 35px;
-	font-size: 0;
-	text-indent: -9999px;
-	appearance: none;
-	box-shadow: none;
-	border-radius: none;
-	border: none;
-	cursor: pointer;
-	transition: background 0.3s;
-}
-
-.c-hamburger:focus {
-	outline: none;
-}
-
-.c-hamburger span {
-	display: block;
-	position: absolute;
-	top: 15px;
-	left: 10px;
-	right: 10px;
-	height: 2px;
-	background: #000;
-}
-
-.c-hamburger span::before,
-.c-hamburger span::after {
-	position: absolute;
-	display: block;
-	left: 0;
-	width: 100%;
-	height: 2px;
-	background-color: #000;
-	content: "";
-}
-
-.c-hamburger span::before {
-	top: -8px;
-}
-
-.c-hamburger span::after {
-	bottom: -8px;
-}	
-
-.c-hamburger--rot {
-	background-color: #f5f5f5;
-	border: 1px solid #ccc;
-}
-
-.c-hamburger--rot span {
-	transition: transform 0.3s;
-}
-
-/* active state, i.e. menu open */
-.c-hamburger--rot.is-active {
-	background-color: #333;
-}
-
-.c-hamburger--rot.is-active span {
-	transform: rotate(90deg);
-}
-
-.mobile-nav{
-	position: absolute;
-	top: 10px;
-	right: 10px;
-	z-index: 99999;
-}
-
-@media(min-width:768px) {
-	.mobile-nav{
-		display: none;
+@media(max-width: 768px){
+	.panel-heading {
+		border-radius: 3px;
 	}
 }
+
+/* Scroll Styles only applied in chrome */
 
 ::-webkit-scrollbar {
 	width: 5px;
@@ -211,23 +121,19 @@ a.list-group-item .list-group-item-heading, button.list-group-item .list-group-i
 	-webkit-box-shadow: inset 0 0 6px rgba(0, 48, 88, 1); 
 }
 
-.close-button{
-	font-family: 'Open Sans Condensed',sans-serif;
-	color: #fff;
-	font-weight: bold;
-	font-size: 12px;
-}
+/* InfoWindow Styles */
 
 .gm-style-iw {
 	width: 280px !important;
 	top: 15px !important;
-	left: 0px !important;
+	left: 23px !important;
 	background-color: #fff;
-	box-shadow: 0 1px 6px rgba(178, 178, 178, 0.6);
 }
+
 #iw-container {
 	margin-bottom: 10px;
 }
+
 #iw-container .iw-title, .iw-title a {
 	font-family: 'Open Sans Condensed',sans-serif;
 	font-size: 18px;
@@ -238,6 +144,7 @@ a.list-group-item .list-group-item-heading, button.list-group-item .list-group-i
 	margin: 0;
 	text-decoration: none;
 }
+
 #iw-container .iw-content {
 	font-size: 14px;
 	line-height: 18px;
@@ -248,18 +155,7 @@ a.list-group-item .list-group-item-heading, button.list-group-item .list-group-i
 	overflow-y: auto;
 	overflow-x: hidden;
 }
-.iw-content img {
-	float: right;
-	margin: 0 5px 5px 10px; 
-}
-.iw-bottom-gradient {
-	position: absolute;
-	width: 326px;
-	height: 25px;
-	bottom: 10px;
-	right: 18px;
-	background: linear-gradient(to bottom, rgba(255,255,255,0) 0%, rgba(255,255,255,1) 100%);
-	background: -webkit-linear-gradient(top, rgba(255,255,255,0) 0%, rgba(255,255,255,1) 100%);
-	background: -moz-linear-gradient(top, rgba(255,255,255,0) 0%, rgba(255,255,255,1) 100%);
-	background: -ms-linear-gradient(top, rgba(255,255,255,0) 0%, rgba(255,255,255,1) 100%);
+
+.gm-style-iw div:first-child{
+	max-width: 280px !important;
 }

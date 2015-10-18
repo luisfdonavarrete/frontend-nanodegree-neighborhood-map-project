@@ -7,9 +7,8 @@ module.exports = function(grunt) {
 				force: true
 			},
 			js:    ["assets/js/"],
-			css:   ["assets/css/"],
-			assets: [
-				"dist/assets/*",
+			css:   [
+				"assets/css/styles.min.css"
 			]
 		},
 		concat: {
@@ -32,7 +31,7 @@ module.exports = function(grunt) {
 					'assets/js/app.min.js': [
 						'bower_components/jquery/dist/jquery.min.js',
 						'bower_components/underscore/underscore-min.js',
-						'bower_components/amplify/lib/amplify.store.min.js',
+						'bower_components/jquery-ui/jquery-ui.min.js',
 						'assets/js/app.js']
 				}
 			}
@@ -46,6 +45,7 @@ module.exports = function(grunt) {
 				files: {
 					'assets/css/styles.min.css': [
 						'bower_components/bootstrap/dist/css/bootstrap.css',
+						'bower_components/jquery-ui/themes/smoothness/jquery-ui.min.css',
 						'develop/css/styles.css'
 					]
 				}
