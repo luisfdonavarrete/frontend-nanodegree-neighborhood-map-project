@@ -26,17 +26,16 @@
 							<div class="form-group hidden-xs">
 								<div class="input-group">
 									<input type="text" class="form-control" placeholder="Search for..." data-bind="value: query, valueUpdate: 'keyup'" autocomplete="off">
-
-									<span class="input-group-btn">
-										<button class="btn btn-default" type="button">Go!</button>
+									<span class="input-group-addon">
+										<span class="glyphicon glyphicon-search"></span>
 									</span>
 								</div>
 							</div>
 							<div class="form-group visible-xs-block">
 							
 								<div class="input-group">									
-									<input type="text" class="form-control" placeholder="Search for..." aria-describedby="basic-addon1" data-bind="autoComplete: { selected: selectedOption, options: options }">
-									<span class="input-group-addon" id="basic-addon1">
+									<input type="text" class="form-control" placeholder="Search for..." data-bind="autoComplete: { selected: selectedOption, options: options }">
+									<span class="input-group-addon">
 										<span class="glyphicon glyphicon-search"></span>
 									</span>
 								</div>
@@ -45,7 +44,7 @@
 					</div>
 					<div class="panel-body fixed-size-scroll">
 						<div class="list-group location-list-view" data-bind="foreach: filterLocations">
-							<a class="list-group-item" data-bind="click: $parent.selectLocation, attr: {href: link, title: name}, css: { 'active' : $parent.isActive($data)}">
+							<a class="list-group-item" data-bind="click: $parent.selectLocation, attr: {href: '#' + link(), title: name, id: id}, css: { 'active' : $parent.isActive($data)}">
 								<h4 class="list-group-item-heading" data-bind="text: name"></h4>
 								<p class="list-group-item-text">
 									<span data-bind="text: location().address"></span><br>
@@ -68,12 +67,12 @@
 					<a target="_blank" href="<%= webSite %>"><%= name %></a>
 				</div>    
  				<div class="iw-content">
- 						<p>
-							<%= address %></span><br>
-							<%= city %>, <%= cc %><br>
-							<span><%= phone %></span>
-						</p>			
-					</div>
+					<p>
+						<%= address %></span><br>
+						<%= city %>, <%= cc %><br>
+						<span><%= phone %></span>
+					</p>			
+				</div>
 			</div>
 		</script>
 		<script src="assets/js/app.min.js"></script>

@@ -505,6 +505,7 @@ a+" })()) }}"};this.addTemplate=function(a,b){w.write("<script type='text/html' 
 	    FOURSQUARE_CLIENT_ID = "JBECVIB3NHKFR3G1INT4BMJZFO2FZVHZNQNSOCDYRXDOZCEA",
 	    FOURSQUARE_CLIENT_SECRET = "ADKJBKRSFS3PTFRIPSDZMIJZ0QF0B4YJJXUQCPDOIT5YOAU5",
 	    INFOWINDOW_OFFSET = 150,
+	    LIST_ITEM_HEIGHT = 54,
 	    map,
 	    infowindow,
 	    bounds,
@@ -516,15 +517,12 @@ a+" })()) }}"};this.addTemplate=function(a,b){w.write("<script type='text/html' 
 	 * Define a custom knockout binding in order to use the jQuery-UI autocomplete widget
 	 */
 	ko.bindingHandlers.autoComplete = {
-		// Only using init event because the Jquery.UI.AutoComplete widget will take care of the update callbacks
 		init: function (element, valueAccessor, allBindings, viewModel, bindingContext) {
-			// { selected: mySelectedOptionObservable, options: myArrayOfLabelValuePairs }
 			var settings = valueAccessor();
 			var selectedOption = settings.selected;
 			var options = settings.options;
 
 			var updateElementValueWithLabel = function (event, ui) {
-				// Stop the default behavior
 				event.preventDefault();
 				ui.item.object.selectHandler();
 				// Update our SelectedOption observable
@@ -541,16 +539,28 @@ a+" })()) }}"};this.addTemplate=function(a,b){w.write("<script type='text/html' 
 			});
 		}
 	};
-
+	
+	/**
+	 * Represents a Location on the map with its respective marker.
+	 * @class Location
+	 * @constructor
+	 * @param {object} data - Object with this information name, location, contact, url 
+	 */
 	function Location(data) {
 		var self = this;
+		this.id = data.id;
 		this.name = ko.observable(data.name);
 		this.location = ko.observable(data.location);
 		this.latitude = ko.observable(data.location.lat);
 		this.longitude = ko.observable(data.location.lng);
 		this.contact = ko.observable(data.contact);
 		this.webSite = ko.observable(data.url);
-		this.link = ko.observable(encodeURIComponent(data.name));
+		this.link = ko.computed(function(){
+			var response = self.name().toLowerCase();
+			response = response.replace(/[`~!@#$%^&*()_|+\-=?;:'",.<>\{\}\[\]\\\/]/gi, '');
+			response = response.split(" ").join("-");
+			return response;
+		})
 		this.marker = ko.observable(
 			new google.maps.Marker({			
 				position: new google.maps.LatLng(data.location.lat, data.location.lng),
@@ -561,6 +571,7 @@ a+" })()) }}"};this.addTemplate=function(a,b){w.write("<script type='text/html' 
 		);
 		
 		this.selectHandler = function(){
+			location.hash = self.link();
 			if(_.isEqual(self.marker(), previousMarker)){
 				self.marker().setAnimation(null);
 				infowindow.close();
@@ -580,19 +591,29 @@ a+" })()) }}"};this.addTemplate=function(a,b){w.write("<script type='text/html' 
 				infowindow.open(map, self.marker());
 				previousMarker = self.marker(); 
 			}
-			google.maps.event.addListener(infowindow,'closeclick',function(){
+			google.maps.event.addListener(infowindow, 'closeclick', function(){
 				infowindow.setContent('');
 				previousMarker = undefined;	
 				self.marker().setAnimation(null);
 			});
-			var newPosition = new google.maps.Point(window.innerWidth - 300, window.innerHeight - INFOWINDOW_OFFSET);
+			var newPosition = new google.maps.Point(window.innerWidth - INFOWINDOW_OFFSET, window.innerHeight - INFOWINDOW_OFFSET);
 			var markerPosition =  overlay.getProjection().fromLatLngToContainerPixel(self.marker().getPosition());
 			var distance = calculateDistance(newPosition, markerPosition);
 			(window.innerWidth <= 768) ? map.panBy(distance.x, distance.y) : map.panTo(self.marker().getPosition()) ;
 			
 		};
+		/* Add the position's marker to the bound array */
 		bounds.extend(this.marker().position);
-		google.maps.event.addListener(this.marker(), 'click', this.selectHandler);		
+		/* Add the click Listener event to the marker */
+		google.maps.event.addListener(this.marker(), 'click', function(){
+			var listViewHeight = $(".location-list-view").height();
+			var currentScrollTop = $(".fixed-size-scroll").scrollTop();
+			var topScroll = $('#' + self.id).position().top - LIST_ITEM_HEIGHT;
+			$(".fixed-size-scroll").animate({
+				scrollTop: (currentScrollTop + topScroll) % listViewHeight
+			});
+			$('#' + self.id).trigger('click');
+		});
 	}
 
 	function LocationViewModel(locationsData) {
@@ -601,13 +622,12 @@ a+" })()) }}"};this.addTemplate=function(a,b){w.write("<script type='text/html' 
 		this.query = ko.observable('');
 		this.activeLocation = ko.observable();
 		this.filterLocations = ko.computed(function() {
+			var locationName = "";
+			var queryString = "";
 			self.locations().forEach(function(location){
-				if(location.name().toLowerCase().indexOf(self.query().toLowerCase()) >= 0){
-					location.marker().setMap(map);
-				}
-				else{
-					location.marker().setMap(null);
-				}
+				locationName = location.name().toLowerCase();
+				queryString =  self.query().toLowerCase();
+				(locationName.indexOf(queryString) >= 0) ? location.marker().setMap(map) : location.marker().setMap(null);				
 			});
 			return ko.utils.arrayFilter(self.locations(), function(value){
 				if(value.marker().getMap()){
@@ -627,7 +647,6 @@ a+" })()) }}"};this.addTemplate=function(a,b){w.write("<script type='text/html' 
 		});
 		
 		this.selectLocation = function(locationItem){
-			location.hash = locationItem.link();
 			self.activeLocation(locationItem);
 			locationItem.selectHandler();
 		};
@@ -731,7 +750,7 @@ a+" })()) }}"};this.addTemplate=function(a,b){w.write("<script type='text/html' 
 		});
 		
 		/** 
-		 * Ask for the current location adn run the app with data from FOURSQUARE or data from the localStorage
+		 * Ask for the current location and runs the app with data from FOURSQUARE or data from the localStorage
 		 */
 		
 		if(!localStorage.getItem('locations')){
@@ -750,7 +769,6 @@ a+" })()) }}"};this.addTemplate=function(a,b){w.write("<script type='text/html' 
 			ko.applyBindings(new LocationViewModel(mappedLocations));
 		}
 	};
-	
 	/*
 	**the init function is returned and added the the window object then it gets called when the google map's API is loaded
 	*/

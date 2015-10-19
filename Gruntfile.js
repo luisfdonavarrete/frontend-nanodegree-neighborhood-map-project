@@ -45,7 +45,6 @@ module.exports = function(grunt) {
 				files: {
 					'assets/css/styles.min.css': [
 						'bower_components/bootstrap/dist/css/bootstrap.css',
-						'bower_components/jquery-ui/themes/smoothness/jquery-ui.min.css',
 						'develop/css/styles.css'
 					]
 				}

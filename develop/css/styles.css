@@ -72,6 +72,14 @@ a.list-group-item .list-group-item-heading, button.list-group-item .list-group-i
 
 /* Jquery autocomplet styles */
 
+.ui-menu {
+	list-style: none;
+	padding: 0;
+	margin: 0;
+	display: block;
+	outline: 0;
+}
+
 .ui-autocomplete{
 	border: none;
 	z-index: 999999;
