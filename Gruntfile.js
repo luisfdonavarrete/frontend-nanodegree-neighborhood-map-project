@@ -17,8 +17,6 @@ module.exports = function(grunt) {
 			},
 			script: {
 				src: [
-					'bower_components/bootstrap/js/collapse.js',
-					'bower_components/bootstrap/js/scrollspy.js',
 					'bower_components/knockout/dist/knockout.js',
 					'develop/js/app.js'
 				],
@@ -53,7 +51,7 @@ module.exports = function(grunt) {
 		critical: {
 			test: {
 				options: {
-					base: './',
+					base: '../',
 					css: [
 						'assets/css/styles.min.css'
 					],
