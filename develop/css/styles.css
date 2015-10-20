@@ -132,7 +132,7 @@ a.list-group-item .list-group-item-heading, button.list-group-item .list-group-i
 /* InfoWindow Styles */
 
 .gm-style-iw {
-	width: 280px !important;
+	width: 220px !important;
 	top: 15px !important;
 	left: 23px !important;
 	background-color: #fff;
@@ -165,5 +165,5 @@ a.list-group-item .list-group-item-heading, button.list-group-item .list-group-i
 }
 
 .gm-style-iw div:first-child{
-	max-width: 280px !important;
+	max-width: 220px !important;
 }

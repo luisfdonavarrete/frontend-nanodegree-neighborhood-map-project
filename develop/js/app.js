@@ -5,8 +5,10 @@ var FOURSQUARE_API_URL = "https://api.foursquare.com/v2/venues/explore?",
     DEFAUTL_CITY_SEARCH = "Chicago, IL",
     FOURSQUARE_CLIENT_ID = "JBECVIB3NHKFR3G1INT4BMJZFO2FZVHZNQNSOCDYRXDOZCEA",
     FOURSQUARE_CLIENT_SECRET = "ADKJBKRSFS3PTFRIPSDZMIJZ0QF0B4YJJXUQCPDOIT5YOAU5",
-    INFOWINDOW_OFFSET = 150,
+    INFOWINDOW_VERTICAL_OFFSET = 150,
+    INFOWINDOW_HORIZONTAL_OFFSET = 140,
     LIST_ITEM_HEIGHT = 54,
+    
     map,
     infowindow,
     bounds,
@@ -19,6 +21,7 @@ var FOURSQUARE_API_URL = "https://api.foursquare.com/v2/venues/explore?",
  */
 ko.bindingHandlers.autoComplete = {
 	init: function (element, valueAccessor, allBindings, viewModel, bindingContext) {
+		/* initial values to comfigure the the custom binding */ 
 		var settings = valueAccessor();
 		var selectedOption = settings.selected;
 		var options = settings.options;
@@ -97,7 +100,7 @@ function Location(data) {
 			previousMarker = undefined;	
 			self.marker().setAnimation(null);
 		});
-		var newPosition = new google.maps.Point(window.innerWidth - INFOWINDOW_OFFSET, window.innerHeight - INFOWINDOW_OFFSET);
+		var newPosition = new google.maps.Point(INFOWINDOW_HORIZONTAL_OFFSET, window.innerHeight - INFOWINDOW_VERTICAL_OFFSET);
 		var markerPosition =  overlay.getProjection().fromLatLngToContainerPixel(self.marker().getPosition());
 		var distance = calculateDistance(newPosition, markerPosition);
 		(window.innerWidth <= 768) ? map.panBy(distance.x, distance.y) : map.panTo(self.marker().getPosition()) ;
@@ -107,6 +110,7 @@ function Location(data) {
 	bounds.extend(this.marker().position);
 	/* Add the click Listener event to the marker */
 	google.maps.event.addListener(this.marker(), 'click', function(){
+		/* Scroll the listView to a visible place on the screen */ 
 		var listViewHeight = $(".location-list-view").height();
 		var currentScrollTop = $(".fixed-size-scroll").scrollTop();
 		var topScroll = $('#' + self.id).position().top - LIST_ITEM_HEIGHT;
@@ -122,6 +126,7 @@ function LocationViewModel(locationsData) {
 	this.locations = ko.observableArray(locationsData);
 	this.query = ko.observable('');
 	this.activeLocation = ko.observable();
+	/* filter the location item from the list view and maker form the map according with the value writen buy the user*/
 	this.filterLocations = ko.computed(function() {
 		var locationName = "";
 		var queryString = "";
@@ -136,8 +141,9 @@ function LocationViewModel(locationsData) {
 			}
 		});
 	});
-
+	/* the slected option in the jQuery-ui autocomplete widget */
 	this.selectedOption = ko.observable('');
+	/* array with all the otion to be used by the jQuery-ui autocomplete widget */
 	this.options = ko.utils.arrayMap(self.locations(), function (element) {
 		return {
 			label: element.name(),
@@ -217,11 +223,14 @@ function initMap(){
 	map = new google.maps.Map(document.getElementById('map-section'), {
 		zoom: 12
 	});
-	infowindow = new google.maps.InfoWindow();
+	infowindow = new google.maps.InfoWindow({
+		disableAutoPan: true
+	});
+	/* Initialize html template the infowindows */
 	infoWindowTemplate = _.template($("#info-window-template").html());		
 	overlay = new google.maps.OverlayView();
 	overlay.draw = function() {};
-	overlay.setMap(map);		
+	overlay.setMap(map);
 	google.maps.event.addDomListener(window, "resize", function() {
 		var center =  map.getCenter();
 		google.maps.event.trigger(map, "resize");
@@ -235,9 +244,9 @@ function initMap(){
 			return s + "display: block !important;";	 			
 		});
 		/* Since this div is in a position prior to .gm-div style-iw.
-			* We use jQuery and create a iwBackground variable,
-			* and took advantage of the existing reference .gm-style-iw for the previous div with .prev().
-			*/
+		* We use jQuery and create a iwBackground variable,
+		* and took advantage of the existing reference .gm-style-iw for the previous div with .prev().
+		*/
 		var iwBackground = iwOuter.prev();
 		// Removes background shadow DIV
 		iwBackground.children(':nth-child(2)').css({'display' : 'none'});
@@ -247,7 +256,9 @@ function initMap(){
 		var iwCloseBtn = iwOuter.next();
 		// Change the image in the close button
 		iwCloseBtn.css({right: '32px', top: '16px', opacity: '1'});
-		iwCloseBtn.html('<img src="./assets/images/cross8.png" alt="">');			
+		iwCloseBtn.html('<img src="./assets/images/cross8.png" alt="close-button">');
+		var closeImg =  iwCloseBtn.next();
+		closeImg.css({height: 16, width: 16, top: 16, right: 32});
 	});
 
 	/** 
