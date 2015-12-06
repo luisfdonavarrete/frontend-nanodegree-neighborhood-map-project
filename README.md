@@ -8,4 +8,4 @@ There is a search bar that allows the user to filter the places by name. To see 
 
 ### To see the app go to the following link:
 
-* [Neighborhood Map App](http://luisfdonavarrete.github.io/Neighborhood-Map-Project/)
+* [Neighborhood Map App](http://luisfdonavarrete.github.io/frontend-nanodegree-neighborhood-map-project/)
