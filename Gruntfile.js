@@ -1,17 +1,17 @@
-module.exports = function(grunt) {
+module.exports = function (grunt) {
 
 	grunt.initConfig({
 		pkg: grunt.file.readJSON("package.json"),
 		dirs: {
-			output : "assets"			
+			output: "assets"
 		},
 		env: grunt.option('env') || process.env.GRUNT_ENV || 'development',
 		clean: {
 			options: {
 				force: true
 			},
-			js:    ["<%= dirs.output %>/js/"],
-			css:   [
+			js: ["<%= dirs.output %>/js/"],
+			css: [
 				"<%= dirs.output %>/css/styles.min.css"
 			]
 		},
@@ -31,17 +31,17 @@ module.exports = function(grunt) {
 			}
 		},
 		uglify: {
-				dist: {
-					files: {
-						"<%= dirs.output %>/js/app.min.js": ["<%= dirs.output %>/js/app.min.js"]
-					}
+			dist: {
+				files: {
+					"<%= dirs.output %>/js/app.min.js": ["<%= dirs.output %>/js/app.min.js"]
 				}
+			}
 		},
 		concat_css: {
 			files: {
 				src: [
 					"bower_components/bootstrap/dist/css/bootstrap.css",
-					"develop/css/styles.css"	
+					"develop/css/styles.css"
 				],
 				dest: "<%= dirs.output %>/css/styles.min.css"
 			}
@@ -51,11 +51,16 @@ module.exports = function(grunt) {
 				files: {
 					"<%= dirs.output %>/css/styles.min.css": ["<%= dirs.output %>/css/styles.min.css"]
 				}
-			}			
+			}
 		},
 		critical: {
 			test: {
 				options: {
+					pathPrefix: (function () {						
+						var path = __dirname;
+						path = path.split('/').pop() + '/';
+						return path;
+					})(),
 					css: [
 						"<%= dirs.output %>/css/styles.min.css"
 					],
@@ -67,9 +72,9 @@ module.exports = function(grunt) {
 			}
 		},
 		watch: {
-			grunt: { 
-				files: ["Gruntfile.js"], 
-				tasks: ["default"] 
+			grunt: {
+				files: ["Gruntfile.js"],
+				tasks: ["default"]
 			},
 			scripts: {
 				files: ["develop/js/**/*.js"],
@@ -88,7 +93,7 @@ module.exports = function(grunt) {
 		},
 
 	});
-	
+
 	grunt.loadNpmTasks("grunt-contrib-clean");
 	grunt.loadNpmTasks("grunt-contrib-uglify");
 	grunt.loadNpmTasks("grunt-contrib-concat");
@@ -100,24 +105,24 @@ module.exports = function(grunt) {
 	
 	// Default task(s).
 	
-	grunt.registerTask("cssTask", (function(){
-		if(grunt.config('env') === "development"){
+	grunt.registerTask("cssTask",(function () {
+		if (grunt.config('env') === "development") {
 			return ["clean:css", "concat_css", "critical"];
 		}
-		else{
+		else {
 			return ["clean:css", "concat_css", "cssmin", "critical"];
-		}	
+		}
 	})());
 
-	grunt.registerTask("jsTask", (function(){
-		if(grunt.config('env') === "development"){
+	grunt.registerTask("jsTask",(function () {
+		if (grunt.config('env') === "development") {
 			return ["clean:js", "concat"];
 		}
-		else{
+		else {
 			return ["clean:js", "concat", "uglify"];
-		}	
+		}
 	})());
-	
-	grunt.registerTask("default",  ["clean", "cssTask", "jsTask","watch"]);
+
+	grunt.registerTask("default", ["clean", "cssTask", "jsTask", "watch"]);
 
 };
