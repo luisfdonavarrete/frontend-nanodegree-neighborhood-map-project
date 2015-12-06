@@ -56,11 +56,7 @@ module.exports = function (grunt) {
 		critical: {
 			test: {
 				options: {
-					pathPrefix: (function () {						
-						var path = __dirname;
-						path = path.split('/').pop() + '/';
-						return path;
-					})(),
+					pathPrefix: './',
 					css: [
 						"<%= dirs.output %>/css/styles.min.css"
 					],
